@@ -1,0 +1,20 @@
+{
+  "name": "crosssense-api",
+  "version": "1.0.0",
+  "description": "Crosssense API Server",
+  "author": "Areth <al.reshetnikov@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node ./app/server.js",
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "dependencies": {
+    "chai": "^3.5.0",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0"
+  }
+}
