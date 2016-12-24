@@ -7,7 +7,8 @@ module.exports = {
 
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/crosssense-dev'
+    uri: process.env.MONGODB_URI_DEV
+      || 'mongodb://localhost/crosssense-dev'
   },
 
   // Seed database on startup

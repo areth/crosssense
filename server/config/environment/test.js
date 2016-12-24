@@ -6,7 +6,8 @@
 module.exports = {
   // MongoDB connection options
   mongo: {
-    uri: 'mongodb://localhost/crosssense-test'
+    uri: process.env.MONGODB_URI_TEST
+      || 'mongodb://localhost/crosssense-test'
   },
   sequelize: {
     uri: 'sqlite://',
