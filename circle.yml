@@ -11,7 +11,8 @@ dependencies:
 
   # Don't use tags like areth/crosssense:$CIRCLE_SHA1 for the caching reasons 
   override:
-    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
+    - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; echo docker image loaded; fi
+    - docker images
     - docker build --rm=false -t areth/crosssense .
     - mkdir -p ~/docker; docker save areth/crosssense > ~/docker/image.tar
 
