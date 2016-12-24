@@ -9,7 +9,7 @@ dependencies:
   cache_directories:
     - "~/docker"
 
-  # Don't use tags like areth/crosssense:$CIRCLE_SHA1 for the caching reasons 
+  # Don't use tags like areth/crosssense:$CIRCLE_SHA1 for the caching reasons
   override:
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; echo docker image loaded; fi
     - docker images
