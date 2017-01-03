@@ -1,6 +1,7 @@
 'use strict';
 
 import User from './user.model';
+import Receptor from '../receptor/receptor.model';
 import config from '../../config/environment';
 import jwt from 'jsonwebtoken';
 
@@ -37,12 +38,20 @@ export function create(req, res) {
   var newUser = new User(req.body);
   newUser.provider = 'local';
   newUser.role = 'user';
+
+  var newReceptor = new Receptor({user: newUser._id});
+  newUser.receptor = newReceptor._id;
+  
   newUser.save()
+    .tap(function(user) {
+      return newReceptor.save();
+    })
     .then(function(user) {
       var token = jwt.sign({ _id: user._id }, config.secrets.session, {
         expiresIn: 60 * 60 * 5
       });
       res.json({ token });
+      return user;
     })
     .catch(validationError(res));
 }
