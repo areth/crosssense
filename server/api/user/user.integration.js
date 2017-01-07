@@ -4,7 +4,7 @@ import app from '../..';
 import User from './user.model';
 import Receptor from '../receptor/receptor.model';
 import request from 'supertest';
-import testGlobal from '../test/global';
+import * as testGlobal from '../test/global';
 
 describe('User API:', function() {
   describe('GET /api/users/me', function() {
@@ -15,7 +15,7 @@ describe('User API:', function() {
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
-          expect(res.body._id.toString()).to.equal(testGlobal.user._id.toString());
+          expect(res.body.email).to.equal(testGlobal.user.email);
           done();
         });
     });
@@ -60,7 +60,7 @@ describe('User API:', function() {
       User.findOne({name: newUser.name}).exec()
         .then(function(user){
           userId = user._id;
-          return Receptor.findOne({_id: user.receptor}).exec();
+          return Receptor.findById(user.receptor).exec();
         })
         .then(function(receptor){
           expect(receptor).to.have.property('user').to.equal(userId);

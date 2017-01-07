@@ -2,7 +2,8 @@
 
 import app from '../..';
 import User from '../user/user.model';
-import testGlobal from './global';
+import Receptor from '../receptor/receptor.model';
+import * as testGlobal from './global';
 import request from 'supertest';
 
 // Clear users before testing
@@ -10,10 +11,11 @@ before(function(done) {
   User.remove().then(function() {
       var user = new User(testGlobal.user);
       return user.save();
-      //testMain.user._id = user._id;
     })
     .then(function(user) {
-      testGlobal.user._id = user._id;
+      // user._id is hidden
+      //testGlobal.user._id = user._id;
+      testGlobal.user.receptor = user.receptor;
       request(app)
         .post('/auth/local')
         .send(testGlobal.user)
@@ -26,10 +28,12 @@ before(function(done) {
           testGlobal.token = res.body.token;
           done();
         });
-    });;
+    });
 });
 
 // Clear users after testing
-after(function() {
-  return User.remove();
+after(function(done) {
+  User.remove().exec();
+  Receptor.remove().exec();
+  done();
 });

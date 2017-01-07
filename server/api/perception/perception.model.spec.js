@@ -11,10 +11,8 @@ var perception = {
 
 describe('Perception model', function(){
 	after(function(){
-		return Perception.find(perception).remove().exec()
-			.then(function(){
-				return Signal.findById(perception.signal).remove().exec();
-			});
+		Perception.remove();
+    Signal.remove();
 	});
 
 	describe('Add perception and relations', function(){
@@ -23,6 +21,8 @@ describe('Perception model', function(){
 				.then(function(perc){
 					expect(perc.signal).to.equal(perception.signal);
 					expect(perc.receptor).to.equal(perception.receptor);
+					expect(perc).to.have.property('_signal').to.be.a('string');
+					expect(perc).to.have.property('_valueScaled').to.equal(Signal.maxValueScale);
 				});
 		});
 	});

@@ -2,15 +2,19 @@
 
 import app from '../..';
 import request from 'supertest';
-import testGlobal from '../test/global';
+import * as testGlobal from '../test/global';
 import Perception from './perception.model';
 import Signal from '../signal/signal.model';
+import uuidV1 from 'uuid/v1';
+import Promise from 'bluebird';
 
 var newPerception;
 
 describe('Perception API:', function() {
-  after(function(){
-    Perception.remove();
+  after(function(done){
+    Perception.remove().exec();
+    Signal.remove().exec();
+    done();
   });
 
   describe('GET /api/perceptions', function() {
@@ -59,8 +63,7 @@ describe('Perception API:', function() {
     it('should respond with the newly created perception', function() {
       expect(newPerception.signal).to.equal('SignalIdPlaceholder');
       expect(newPerception.value).to.equal(0.89);
-      // there is only one signal, so it should be the maximum
-      expect(newPerception.valueScaled).to.equal(Signal.maxValueScale);
+      expect(newPerception).to.not.have.any.keys('_signal', '_valueScaled');
     });
   });
 
@@ -90,5 +93,46 @@ describe('Perception API:', function() {
           done();
         });
     });
+  });
+
+  describe('Create multiple perceptions', function() {
+    var perceptionsNumber = 10;
+    before(function() {
+      return testGlobal.createMultipleUsers()
+        .then(function(multipleUsers){
+          var perceptionsToPost = [];
+          for(let user of multipleUsers){
+            for(let i = 0; i < perceptionsNumber; i++){
+              perceptionsToPost.push({user, perception: {signal: uuidV1(), value: Math.random() * 100}});
+            }
+          }
+          
+          return Promise.map(perceptionsToPost, function(perc){
+            return request(app)
+              .post('/api/perceptions')
+              .send(perc.perception)
+              .set('authorization', `Bearer ${perc.user.token}`)
+              .set('skip-log', true)
+              .expect(201)
+              .expect('Content-Type', /json/);
+          });
+        });
+    });
+
+    it('Multiple perceptions should be created', function() {
+      return Promise.mapSeries(testGlobal.createMultipleUsers(), function(user){
+        return request(app)
+          .get('/api/perceptions')
+          .set('authorization', `Bearer ${user.token}`)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .then(res => {
+            var perceptions = res.body;
+            expect(perceptions).to.be.instanceOf(Array);
+            expect(perceptions).to.have.lengthOf(perceptionsNumber);
+          });
+      });
+    })
+    
   });
 });

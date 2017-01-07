@@ -2,14 +2,18 @@
 
 import mongoose from 'mongoose';
 import uuidV1 from 'uuid/v1';
+var mongooseHidden = require('mongoose-hidden')();
 
 const maxValueScale = 0.95;
 
 var SignalSchema = new mongoose.Schema({
   _id: { type: String, default: uuidV1 },
   receptor: String,
+  receptorSignal: String,
   maxValue: Number
 });
+SignalSchema.plugin(mongooseHidden);
+SignalSchema.index({receptor: 1, receptorSignal: 1});
 
 SignalSchema.statics.maxValueScale = maxValueScale;
 

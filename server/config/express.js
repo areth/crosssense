@@ -34,7 +34,10 @@ export default function(app) {
 
   app.set('appPath', path.join(config.root, 'client'));
   app.use(express.static(app.get('appPath')));
-  app.use(morgan('dev'));
+  app.use(morgan('dev', {
+    // set 'skip-log' header to disable logging a particular request
+    skip: function (req, res) { return req.get('skip-log') }
+  }));
 
   app.set('views', `${config.root}/server/views`);
   app.engine('html', require('ejs').renderFile);
