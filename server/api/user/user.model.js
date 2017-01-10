@@ -3,10 +3,13 @@
 import crypto from 'crypto';
 mongoose.Promise = require('bluebird');
 import mongoose, {Schema} from 'mongoose';
+import uuidV1 from 'uuid/v1';
+var mongooseHidden = require('mongoose-hidden')();
 
 const authTypes = ['github', 'twitter', 'facebook', 'google'];
 
 var UserSchema = new Schema({
+  _id: { type: String, default: uuidV1 },
   name: String,
   email: {
     type: String,
@@ -38,8 +41,10 @@ var UserSchema = new Schema({
   facebook: {},
   twitter: {},
   google: {},
-  github: {}
+  github: {},
+  receptor: String
 });
+UserSchema.plugin(mongooseHidden);
 
 /**
  * Virtuals
